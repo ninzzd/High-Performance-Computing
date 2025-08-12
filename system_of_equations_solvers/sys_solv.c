@@ -24,7 +24,7 @@ void printVect(float* x, int n){
         printf("%f\n",x[i]);
     }
 }
-int gaussJacobiSolver(float** a, float* b, float* x_0, int n, float eta){
+int jacobiSolver(float** a, float* b, float* x_0, int n, float eta){
     float* x_k = (float*)malloc(n*sizeof(float));
     float* x_k1 = (float*)malloc(n*sizeof(float));
     int iter = 0;
@@ -100,6 +100,6 @@ int main(){
     }
     printf("\nEnter the convergence threshold: ");
     scanf("%f",&eta);
-    gaussJacobiSolver(a,b,x_0,n,eta);
+    jacobiSolver(a,b,x_0,n,eta);
     return 0;
 }
