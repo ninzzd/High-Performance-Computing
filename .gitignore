@@ -1,5 +1,6 @@
 # C/C++ Binary Files
 bin/
+*.o
 
 # VS Code Configuration Files
 .vscode/

@@ -1,4 +1,5 @@
 # include <math.h>
+# include <unistd.h> 
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
@@ -9,9 +10,9 @@ char ch_cap ( char ch );
 int ch_eqi ( char ch1, char ch2 );
 int ch_to_digit ( char ch );
 void gmsh_data_read ( char *gmsh_filename, int node_dim, int node_num,
-  double node_x[], int element_order, int element_num, int element_node[] );
+double node_x[], int element_order, int element_num, int element_node[] );
 void gmsh_size_read ( char *gmsh_filename, int *node_num, int *node_dim,
-  int *element_num, int *element_order );
+int *element_num, int *element_order );
 void i4mat_write ( char *output_filename, int m, int n, int table[] );
 double r8_max ( double x, double y );
 double r8_min ( double x, double y );
@@ -24,118 +25,142 @@ void timestamp ( );
 
 
 int main ( int argc, char *argv[] )
-
-
 {
-  int *element_node;
-  int element_num;
-  int element_order;
-  char fem_element_filename[255];
-  char fem_node_filename[255];
-  char gmsh_filename[255];
-  int m;
-  int node_num;
-  double *node_x;
-  char prefix[255];
+    int *element_node;
+    int element_num;
+    int element_order;
+    char fem_element_filename[512];
+    char fem_node_filename[512];
+    char gmsh_filename[512];
+    int m;
+    int node_num;
+    double *node_x;
+    char prefix[512];
+    char cwd[512] = __FILE__;
+    int null_index;
+    for(int i = 511;i >= 0;i--){
+        if(cwd[i] == '\0'){
+            null_index = i;
+            break;
+        }
+    }
+    for(int j = null_index-1;j >= 0;j--){
+        if(cwd[j] == '/'){
+            break;
+        }
+        else{
+            cwd[j] = '\0';
+        }
+    }
+    printf("Source file directory: %s\n",cwd);
 
-  timestamp ( );
-  printf ( "\n" );
-
-  if ( argc <= 1 )
-  {
+    timestamp ( );
     printf ( "\n" );
-    printf ( "  Please enter the filename prefix.\n" );
+    if ( argc <= 1 )
+    {
+        printf ( "\n" );
+        printf ( "  Please enter the filename prefix.\n" );
+        scanf ( "%s", prefix );
+    }
+    else
+    {
+        strcpy ( prefix, argv[1] );
+    }
+    /*
+    Create the filenames.
+    */
+    strcpy ( gmsh_filename, cwd );
+    strcat ( gmsh_filename, prefix ); 
+    strcat ( gmsh_filename, ".msh" );
+    strcpy ( fem_node_filename, cwd );
+    strcat ( fem_node_filename, prefix );
+    strcat ( fem_node_filename, "_nodes.txt" );
+    strcpy ( fem_element_filename, cwd );
+    strcat ( fem_element_filename, prefix );
+    strcat ( fem_element_filename, "_elements.txt" );
+    printf("%s\n%s\n%s\n",gmsh_filename,fem_node_filename,fem_element_filename);
+    /*
+    Read GMSH sizes.
+    */
+    gmsh_size_read ( gmsh_filename, &node_num, &m, &element_num, &element_order );
+    /*
+    Report sizes.
+    */
+    printf ( "\n" );
+    printf ( "  Size information from GMSH:\n" );
+    printf ( "  Spatial dimension M = %d\n", m );
+    printf ( "  Number of nodes NODE_NUM = %d\n", node_num );
+    printf ( "  Number of elements ELEMENT_NUM = %d\n", element_num );
+    printf ( "  Element order ELEMENT_ORDER = %d\n", element_order );
+    FILE *f1;
+    FILE *f2;int dilip;
+    char nodeinfo[255];
+    strcpy(nodeinfo,cwd);
+    strcat(nodeinfo,"nodeinfo.txt");
+    f1=fopen(nodeinfo,"w");
+    for(dilip=0;dilip<2;dilip++)
+    {
+        if(dilip==0)
+        {
+            fprintf(f1, "%d\n",node_num );
+        }
+        if(dilip==1)
+            fprintf(f1, "%d\n",m );
+    }
+    fclose(f1);
+    char elementinfo[255];
+    strcpy(elementinfo,cwd);
+    strcat(elementinfo,"eleminfo.txt");
+    f2=fopen(elementinfo,"w");
+    for(dilip=0;dilip<2;dilip++)
+    {
+        if(dilip==0)
+        {
+            fprintf(f2, "%d\n",element_num );
+        }
+        if(dilip==1)
+            fprintf(f2, "%d\n",element_order );
+    }
+    fclose(f2);
 
-    scanf ( "%s", prefix );
-  }
-  else
-  {
-    strcpy ( prefix, argv[1] );
-  }
-/*
-  Create the filenames.
-*/
-  strcpy ( gmsh_filename, prefix );
-  strcat ( gmsh_filename, ".msh" );
-  strcpy ( fem_node_filename, prefix );
-  strcat ( fem_node_filename, "_nodes.txt" );
-  strcpy ( fem_element_filename, prefix );
-  strcat ( fem_element_filename, "_elements.txt" );
-/*
-  Read GMSH sizes.
-*/
-  gmsh_size_read ( gmsh_filename, &node_num, &m, &element_num, &element_order );
-/*
-  Report sizes.
-*/
-  printf ( "\n" );
-  printf ( "  Size information from GMSH:\n" );
-  printf ( "  Spatial dimension M = %d\n", m );
-  printf ( "  Number of nodes NODE_NUM = %d\n", node_num );
-  printf ( "  Number of elements ELEMENT_NUM = %d\n", element_num );
-  printf ( "  Element order ELEMENT_ORDER = %d\n", element_order );
-FILE *f1;
-FILE *f2;int dilip;
-f1=fopen("nodeinfo.txt","w");
-for(dilip=0;dilip<2;dilip++)
-{
-  if(dilip==0)
-{fprintf(f1, "%d\n",node_num );}
-if(dilip==1)
-fprintf(f1, "%d\n",m );
-}
-fclose(f1);
 
-f2=fopen("eleminfo.txt","w");
-for(dilip=0;dilip<2;dilip++)
-{
-  if(dilip==0)
-{fprintf(f2, "%d\n",element_num );}
-if(dilip==1)
-fprintf(f2, "%d\n",element_order );
-}
-fclose(f2);
-
-
-/*
-  Allocate memory.
-*/
-  node_x = ( double * ) malloc ( m * node_num * sizeof ( double ) );
-  element_node = ( int * )
+    /*
+    Allocate memory.
+    */
+    node_x = ( double * ) malloc ( m * node_num * sizeof ( double ) );
+    element_node = ( int * )
     malloc ( element_order * element_num * sizeof ( int ) );
-/*
-  Read GMSH data.
-*/
-  gmsh_data_read ( gmsh_filename, m, node_num, node_x, element_order,
-    element_num, element_node );
-/*
-  Write FEM data.
-*/
-  r8mat_write ( fem_node_filename, m, node_num, node_x );
+    /*
+    Read GMSH data.
+    */
+    gmsh_data_read ( gmsh_filename, m, node_num, node_x, element_order,
+        element_num, element_node );
+    /*
+    Write FEM data.
+    */
+    r8mat_write ( fem_node_filename, m, node_num, node_x );
 
-  i4mat_write ( fem_element_filename, element_order, element_num,
-    element_node );
-/*
-  Free memory.
-*/
-  free ( element_node );
-  free ( node_x );
-/*
-  Terminate.
-*/
-  printf ( "\n" );
-  printf ( "GMSH_TO_FEM:\n" );
-  printf ( "  Normal end of execution.\n" );
-  printf ( "\n" );
-  timestamp ( );
+    i4mat_write ( fem_element_filename, element_order, element_num,
+        element_node );
+    /*
+    Free memory.
+    */
+    free ( element_node );
+    free ( node_x );
+    /*
+    Terminate.
+    */
+    printf ( "\n" );
+    printf ( "GMSH_TO_FEM:\n" );
+    printf ( "  Normal end of execution.\n" );
+    printf ( "\n" );
+    timestamp ( );
 
-  return 0;
+    return 0;
 }
 /******************************************************************************/
 
 char ch_cap ( char ch )
-
-
 {
   if ( 97 <= ch && ch <= 122 )
   {

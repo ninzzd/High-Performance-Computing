@@ -314,16 +314,37 @@ void applycond (double *k, double *f,int n,int m, int * bcdof, double * bcval )
     }
 }
 
-void main()
+int main()
 {
-
+    char cwd[512] = __FILE__;
+    int null_index;
+    for(int i = 511;i >= 0;i--){
+        if(cwd[i] == '\0'){
+            null_index = i;
+            break;
+        }
+    }
+    for(int j = null_index-1;j >= 0;j--){
+        if(cwd[j] == '/'){
+            break;
+        }
+        else{
+            cwd[j] = '\0';
+        }
+    }
     int i,j,k,nnode,mnode,nel,mel;
     double *coord;
     int *elem;
     k=0;i=0;j=0;
     FILE *f1;FILE *f3;
     FILE *f2;FILE *f4;
-    f1=fopen("nodeinfo.txt","r");
+    char nodeinfo[512];
+    char elementinfo[512];
+    strcpy(nodeinfo,cwd);
+    strcat(nodeinfo,"nodeinfo.txt");
+    strcpy(elementinfo,cwd);
+    strcat(elementinfo,"eleminfo.txt");
+    f1=fopen(nodeinfo,"r");
     if(f1==NULL)
     {
         printf("failed to open nodeinfo matrix\n" );
@@ -347,7 +368,7 @@ void main()
     fclose(f1);
 
     k=0;
-    f2=fopen("eleminfo.txt","r");
+    f2=fopen(elementinfo,"r");
     if(f2==NULL)
     {
         printf("failed to open eleminfo matrix\n" );
@@ -371,7 +392,19 @@ void main()
     k=0;fclose(f2);
     coord=(double*)malloc(nnode*mnode*sizeof(double));
     elem=(int*)malloc(nel*mel*sizeof(int));
-    f3=fopen("unstrucquad_nodes.txt","r");
+    char prefix[255];
+    char elements[255];
+    char nodes[255];
+    printf("Enter the prefix of the files:\n");
+    scanf("%s",&prefix);
+    strcpy(elements,cwd);
+    strcpy(nodes,cwd);
+    strcat(elements,prefix);
+    strcat(nodes,prefix);
+    strcat(elements,"_elements.txt");
+    strcat(nodes,"_nodes.txt");
+    printf("Elements file: %s, Nodes file: %s\n",elements,nodes);
+    f3=fopen(nodes,"r");
     if(f3==NULL)
     {
         printf("failed to open unstrucquad_nodes \n" );
@@ -396,7 +429,7 @@ void main()
             printf("%lf ",coord[mnode*i+j] );
         printf("\n" );
     }
-    f4=fopen("unstrucquad_elements.txt","r");
+    f4=fopen(elements,"r");
     if(f4==NULL)
     {
         printf("failed to open unstrucquad_elements \n" );
@@ -479,7 +512,8 @@ void main()
     bcval=(double*)malloc(nbc*sizeof(double));
     F=(double*)malloc(sysdof*sizeof(double));
 
-    // ****Boundary Conditions****
+    // -----------------------------------------------------------------------------
+    // **** IMPORTANT SECTION : Boundary Conditions ****
     for(i=0;i<nbc;i++)
     {
         bcnode[k]=i+1;
@@ -488,13 +522,13 @@ void main()
     k=0;
     for(i=0;i<nnode;i++)
     {
-        if(coord[mnode*i+0]==0&&coord[mnode*i+1]!=0&&coord[mnode*i+1]!=1)
+        if(coord[mnode*i+0]==0 && coord[mnode*i+1]!=0 && coord[mnode*i+1]!=1)
         {
             bcnode[k]=i+1;
             bcval[k]=0;
             k++;
         }
-        if(coord[mnode*i+0]==1&&coord[mnode*i+1]!=0&&coord[mnode*i+1]!=1)
+        if(coord[mnode*i+0]==1 && coord[mnode*i+1]!=0 && coord[mnode*i+1]!=1)
         {
             bcnode[k]=i+1;
             bcval[k]=1;
@@ -629,17 +663,26 @@ void main()
     }
     */
     FILE *o1,*o2,*o3,*o4;
-    o1=fopen("kinfo.txt","w");
+    char kinfo[512];
+    char kmat[512];
+    char fvec[512];
+    strcpy(kinfo,cwd);
+    strcat(kinfo,"kinfo.txt");
+    strcpy(kmat,cwd);
+    strcat(kmat,"kmat.txt");
+    strcpy(fvec,cwd);
+    strcat(fvec,"Fvec.txt");
+    o1=fopen(kinfo,"w");
     fprintf(o1, "%d\n",sysdof );
     fclose(o1);
-    o2=fopen("Kmat.txt","w");
+    o2=fopen(kmat,"w");
     for(k=0;k<sysdof;k++)
     {
         for(m=0;m<sysdof;m++)
             fprintf(o2, "%lf\n",K[sysdof*k+m] );
     }
     fclose(o2);
-    o3=fopen("Fvec.txt","w");
+    o3=fopen(fvec,"w");
     for(k=0;k<sysdof;k++)
     fprintf(o3, "%lf\n",F[k] );
     fclose(o3);
@@ -664,4 +707,5 @@ void main()
     free(bcval);
     free(p);
     free(be);
+    return 0;
 }

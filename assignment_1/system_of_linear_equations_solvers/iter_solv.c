@@ -121,6 +121,54 @@ int gaussSeidelSolver(float** a, float* b, float* x_0, int n, float eta){
     free(x_k1);
     return iter;
 }
+int sorJacobiSolver(float** a, float* b, float* x_0, int n, float eta, float w){
+    float* x_k = (float*)malloc(n*sizeof(float));
+    float* x_k1 = (float*)malloc(n*sizeof(float));
+    int iter = 0;
+    float max_err;
+    do{
+        if(iter == 0)
+            memcpy(x_k,x_0,(size_t)n*sizeof(float));
+        else
+            memcpy(x_k,x_k1,(size_t)n*sizeof(float));
+        for(int i = 0;i < n;i++){
+            float sum = b[i];
+            for(int j = 0;j < n; j++){
+                if(j < i)
+                    sum -= a[i][j]*x_k1[j];
+                else if(j > i)
+                    sum -= a[i][j]*x_k[j];
+            }
+            x_k1[i] = sum/a[i][i];
+        }
+        iter++;
+        const char* suffix;
+        switch(iter%10){
+            case 1:
+                suffix = "st";
+                break;
+            case 2:
+                suffix = "nd";
+                break;
+            case 3:
+                suffix = "rd";
+                break;
+            default:
+                suffix = "th";
+        }
+        printf("%d%s iteration:\n",iter,suffix);
+        printVect(x_k1,n);
+        max_err = 0.0f;
+        for(int i = 0;i < n;i++){
+            if(fabsf(x_k1[i] - x_k[i]) > max_err)
+                max_err = fabsf(x_k1[i] - x_k[i]);
+        }
+        printf("Max Error = %f\n",max_err);
+    }while(max_err > eta);
+    free(x_k);
+    free(x_k1);
+    return iter;
+}
 int main(){
     float** a;
     float* x_0;
