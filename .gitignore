@@ -1,5 +1,6 @@
+# C-generated matrix containing text files
+*.txt
 # C/C++ Binary Files
-bin/
 *.o
 
 # VS Code Configuration Files
