@@ -2,6 +2,7 @@
 *.txt
 # C/C++ Binary Files
 *.o
+*.exe
 
 # VS Code Configuration Files
 .vscode/
