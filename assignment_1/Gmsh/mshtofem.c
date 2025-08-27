@@ -38,12 +38,23 @@ int main ( int argc, char *argv[] )
     char prefix[512];
     char cwd[512] = __FILE__;
     int null_index;
+    // To find the parent directory of the source file
     for(int i = 511;i >= 0;i--){
         if(cwd[i] == '\0'){
             null_index = i;
             break;
         }
     }
+    #ifdef _WIN32
+    for(int j = null_index-1;j >= 0;j--){
+        if(cwd[j] == '\\'){
+            break;
+        }
+        else{
+            cwd[j] = '\0';
+        }
+    }
+    #elif _LINUX_
     for(int j = null_index-1;j >= 0;j--){
         if(cwd[j] == '/'){
             break;
@@ -52,6 +63,7 @@ int main ( int argc, char *argv[] )
             cwd[j] = '\0';
         }
     }
+    #endif
     printf("Source file directory: %s\n",cwd);
 
     timestamp ( );
