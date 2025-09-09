@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 int main(){
     float d; // Discretization error in both x and y coordinates
     float u0y, u1y, ux0, ux1;
@@ -8,9 +9,40 @@ int main(){
     int n_; // Total number of interior points
     float* b;
     float** a;
-    FILE* kmat, fvec, kinfo;
+    char cwd[512] = __FILE__;
+    char kmat_str[512];
+    char kinfo_str[512];
+    char fvec_str[512];
+    int null_index;
+    // To find the parent directory of the source file
+    for(int i = 511;i >= 0;i--){
+        if(cwd[i] == '\0'){
+            null_index = i;
+            break;
+        }
+    }
+    #ifdef _WIN32
+    for(int j = null_index-1;j >= 0;j--){
+        if(cwd[j] == '\\'){
+            break;
+        }
+        else{
+            cwd[j] = '\0';
+        }
+    }
+    #elif __linux__
+    for(int j = null_index-1;j >= 0;j--){
+        if(cwd[j] == '/'){
+            break;
+        }
+        else{
+            cwd[j] = '\0';
+        }
+    }
+    #endif
+    FILE *kmat, *fvec, *kinfo;
     printf("----- Laplace Equation Solver -----\n");
-    printf("Finite Difference Discretization\n");
+    printf("Finite Difference Method: Discretization\n");
     printf("Consider the surface to be a square bounded by the points: (0,0), (0,1), (1,0), (1,1)\n");
     printf("Enter the required approximate discretization error: dx = dy = ");
     scanf("%f",&d);
@@ -25,6 +57,7 @@ int main(){
             a[i][j] = 0.0f;
         }
     }
+    printf("Grid size: %dx%d\n",n,n);
     printf("Actual discretization error: %f\n",d);
     printf("Enter the dirichlet boundary conditions:\n");
     printf("For all 0 < y < 1, u(0,y) = ");
@@ -95,6 +128,32 @@ int main(){
             a[idx_][idx_] = -4.0f;
         }
     }
-    kmat = fopen("kmat.txt",'w');
+    strcpy(kmat_str,cwd);
+    strcpy(kinfo_str,cwd);
+    strcpy(fvec_str,cwd);
+    strcat(kmat_str,"kmat.txt");
+    strcat(kinfo_str,"kinfo.txt");
+    strcat(fvec_str,"Fvec.txt");
+
+    kinfo = fopen(kinfo_str,"w");
+    fprintf(kinfo,"%d\n",n_);
+    fclose(kinfo);
+    fvec = fopen(fvec_str,"w");
+    for(int i = 0;i < n_;i++){
+        fprintf(fvec,"%f\n",b[i]);
+    }
+    fclose(fvec);
+    kmat = fopen(kmat_str,"w");
+    for(int i = 0;i < n_;i++){
+        for(int j = 0;j < n_;j++){
+            fprintf(kmat,"%f\n",a[i][j]);
+        }
+    }
+    fclose(kmat);
+    free(b);
+    for(int i = 0;i < n_;i++){
+        free(a[i]);
+    }
+    free(a);
     return 0;
 }
