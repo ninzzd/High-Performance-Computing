@@ -150,10 +150,10 @@ int main(){
         }
     }
     fclose(kmat);
-    free(b);
-    for(int i = 0;i < n_;i++){
-        free(a[i]);
-    }
-    free(a);
+    // free(b);
+    // for(int i = 0;i < n_;i++){
+    //     free(a[i]);
+    // }
+    // free(a);
     return 0;
 }
