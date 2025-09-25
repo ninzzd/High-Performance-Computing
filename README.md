@@ -1,1 +1,1 @@
-# High-Performance-Computing
+# High-Performance-Scientific-Computing
