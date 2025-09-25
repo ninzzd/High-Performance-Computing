@@ -70,9 +70,7 @@ int main(){
     scanf("%f",&ux1);
     for(int j = 1;j <= n-2;j++){
         for(int i = 1;i <= n-2;i++){
-            int idx = j*n + i; // global grid index starting from (0,0)
             int idx_ = (j-1)*(n-2) + (i-1); // index corresponsding to b vector
-            int flags[8] = {0,0,0,0,0,0,0,0};
             if(i == 1 && j == 1){
                 b[idx_] = -ux0 - u0y;
                 a[idx_][idx_+1] = 1.0f; // x + d

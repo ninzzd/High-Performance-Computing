@@ -1,8 +1,12 @@
 # C-generated matrix containing text files
 *.txt
-# C/C++ Binary Files
+
+# C Binary Files
 *.o
 *.exe
+
+# C Build Folder and Files
+build/
 
 # VS Code Configuration Files
 .vscode/
