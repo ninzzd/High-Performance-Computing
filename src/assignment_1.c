@@ -39,18 +39,10 @@ int main(){
     // *** FILE-INPUTTED MATRICES FOR TESTING ***
     FILE *kmat, *fvec, *kinfo;
     fGetMat(&kmat,&fvec,&kinfo);
-    fscanf(kinfo,"%d",&n);
-    a = (double**)malloc(n*sizeof(double*));
-    for(int i = 0;i < n;i++){
-        a[i] = (double*)malloc(n*sizeof(double));
-    }
-    for(int i = 0;i < n*n;i++){
-        fscanf(kmat,"%lf",&a[i/n][i%n]);
-    }
-    b = (double*)malloc(n*sizeof(double));
-    for(int i = 0;i < n;i++){
-        fscanf(fvec,"%lf",&b[i]);
-    }
+    getMat(&a,&b,&n,kmat,fvec,kinfo);
+    fclose(kmat);
+    fclose(fvec);
+    fclose(kinfo);
     double *res_gs, *res_j, *res_sor1, *res_sor2, *res_sor3, *x0, w1, w2 ,w3;
     res_j = (double*)malloc(n*sizeof(double));
     res_gs = (double*)malloc(n*sizeof(double));

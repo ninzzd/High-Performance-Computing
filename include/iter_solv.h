@@ -13,3 +13,4 @@ void printIter(int iter);
 void printVect(double* v, int n);
 void printMat(double** a, double* b, double* x, int n);
 void fGetMat(FILE** kmat, FILE** fvec, FILE** kinfo);
+void getMat(double*** a, double** b,int* n, FILE* kmat, FILE* fvec, FILE* kinfo);

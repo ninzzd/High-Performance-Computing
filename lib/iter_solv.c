@@ -159,15 +159,15 @@ double sorOpt(double **a, int n){
     for(int i = 0;i < n;i++){
         for(int j = 0;j < n;j++){
             a_flat[i*n + j] = a[i][j];
-            if(i == j)
-                diag_prod *= a[i][j];
+            // if(i == j)
+            //     diag_prod *= a[i][j];
         }
     }
     double* d_flat = (double*)malloc(n*n*sizeof(double));
     for(int i = 0;i < n;i++){
         for(int j = 0;j < n;j++){
             if(i == j)
-                d_flat[i*n + j] = a[i][j]/diag_prod;
+                d_flat[i*n + j] = 1.0/a[i][j];
             else
                 d_flat[i*n + j] = 0.0;
         }
@@ -221,4 +221,20 @@ void fGetMat(FILE** kmat, FILE** fvec, FILE** kinfo){
     *kmat = fopen(kmat_path, "r");
     *kinfo = fopen(kinfo_path, "r");
     *fvec = fopen(fvec_path, "r");
+}
+void getMat(double*** a, double** b, int* n, FILE* kmat, FILE* fvec, FILE* kinfo){
+    fscanf(kinfo,"%d",n);
+    *a = (double**)malloc(*n*sizeof(double*));
+    for(int i = 0;i < *n;i++){
+        (*a)[i] = (double*)malloc(*n*sizeof(double));
+    }
+    *b = (double*)malloc(*n*sizeof(double));
+    for(int i = 0;i < *n;i++){
+        for(int j = 0;j < *n;j++){
+            fscanf(kmat,"%lf",&(*a)[i][j]);
+        }
+    }
+    for(int i = 0;i < *n;i++){
+        fscanf(fvec,"%lf",&(*b)[i]);
+    }
 }
