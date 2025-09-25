@@ -182,11 +182,13 @@ double sorOpt(double **a, int n){
         }
     }
     double* g = (double*)malloc(n*n*sizeof(double));
-    
-    int info = LAPACKE_dgeev(LAPACK_ROW_MAJOR,'N','N',n,a_flat,n,lambda_r,lambda_i,NULL,n,NULL,n);
+    memset(g,0,n*n*sizeof(double));
+    // C <- alpha*A*B + beta*C
+    cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans,n,n,n,1.0,d_flat,n,e_f_flat,n,0.0,g,n);
+    int info = LAPACKE_dgeev(LAPACK_ROW_MAJOR,'N','N',n,g,n,lambda_r,lambda_i,NULL,n,NULL,n);
     double w_opt;
     if(info == 0){
-        double sr = __DBL_MIN__;
+        double sr = -__DBL_MAX__;
         for(int i = 0;i < n;i++){
             double mag = sqrt(lambda_r[i]*lambda_r[i] + lambda_i[i]*lambda_i[i]);
             if(mag > sr)
