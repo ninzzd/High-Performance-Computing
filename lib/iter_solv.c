@@ -23,7 +23,7 @@ void printVect(double* x, int n){
         printf("%lf\n",x[i]);
     }
 }
-void printIter(int iter){
+void printIter(long long int iter){
     const char* suffix;
         switch(iter%10){
             case 1:
@@ -41,10 +41,10 @@ void printIter(int iter){
     printf("\n%d%s iteration:\n",iter,suffix);
 }
 // mode = 0 : Non-verbose, mode = 1 : Verbose
-int jacobiSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result){
+long long int jacobiSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result){
     double* x_k = (double*)malloc(n*sizeof(double));
     double* x_k1 = (double*)malloc(n*sizeof(double));
-    int iter = 0;
+    long long int iter = 0;
     double max_err;
     do{
         if(iter == 0)
@@ -76,10 +76,10 @@ int jacobiSolver(double** a, double* b, double* x_0, int n, double eta, int mode
     free(x_k1);
     return iter;
 }
-int gaussSeidelSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result){
+long long int gaussSeidelSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result){
     double* x_k = (double*)malloc(n*sizeof(double));
     double* x_k1 = (double*)malloc(n*sizeof(double));
-    int iter = 0;
+    long long int iter = 0;
     double max_err;
     do{
         if(iter == 0)
@@ -113,10 +113,10 @@ int gaussSeidelSolver(double** a, double* b, double* x_0, int n, double eta, int
     free(x_k1);
     return iter;
 }
-int sorSolver(double** a, double* b, double* x_0, int n, double eta, double w, int mode, double* result){
+long long int sorSolver(double** a, double* b, double* x_0, int n, double eta, double w, int mode, double* result){
     double* x_k = (double*)malloc(n*sizeof(double));
     double* x_k1 = (double*)malloc(n*sizeof(double));
-    int iter = 0;
+    long long int iter = 0;
     double max_err;
     do{
         if(iter == 0)
@@ -135,7 +135,7 @@ int sorSolver(double** a, double* b, double* x_0, int n, double eta, double w, i
             x_k1[i] = x_k[i] + w*(x_k1[i] - x_k[i]);
         }
         iter++;
-        max_err = 0.0f;
+        max_err = 0.0;
         for(int i = 0;i < n;i++){
             if(fabsf(x_k1[i] - x_k[i]) > max_err)
                 max_err = fabsf(x_k1[i] - x_k[i]);

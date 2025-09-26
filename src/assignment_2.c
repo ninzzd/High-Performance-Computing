@@ -1,6 +1,9 @@
 #include "iter_solv.h"
 #include "opt_solv.h"
+#include "fdm.h"
 int main(){
+    generateFDM();
+    // ------------------------------------------------------------------------------------
     double **a, *b, *x0, *x;
     int n;
     FILE *kmat, *fvec, *kinfo;
@@ -38,9 +41,11 @@ int main(){
     for(int i = 0;i < n;i++){
         x0[i] = 0.0;
     }
-    int iter_sor_opt = sorSolver(a,b,x0,n,0.000001,w_opt,0,x);
+    long long int iter_sor_opt = sorSolver(a,b,x0,n,0.000001,w_opt,0,x);
     printf("Optimal w = %lf\n",w_opt);
-    printf("No. of iterations = %d\n",iter_sor_opt);
+    printf("No. of iterations = %lld\n",iter_sor_opt);
+    // printVect(x,n);
+    // printf("------------\n");
     // ------------------------------------------------------------------------------------
     free(b);
     for(int i = 0;i < n;i++){

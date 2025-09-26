@@ -6,10 +6,10 @@
 #include "cblas.h"
 #pragma once
 double sorOpt(double **a, int n);
-int jacobiSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result);
-int gaussSeidelSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result);
-int sorSolver(double** a, double* b, double* x_0, int n, double eta, double w, int mode, double* result);
-void printIter(int iter);
+long long int jacobiSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result);
+long long int gaussSeidelSolver(double** a, double* b, double* x_0, int n, double eta, int mode, double* result);
+long long int sorSolver(double** a, double* b, double* x_0, int n, double eta, double w, int mode, double* result);
+void printIter(long long int iter);
 void printVect(double* v, int n);
 void printMat(double** a, double* b, double* x, int n);
 void fGetMat(FILE** kmat, FILE** fvec, FILE** kinfo);

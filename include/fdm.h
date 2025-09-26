@@ -3,3 +3,4 @@
 #include <stdlib.h>
 #include <string.h>
 #pragma once
+void generateFDM();
