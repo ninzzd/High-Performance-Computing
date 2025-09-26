@@ -20,7 +20,7 @@ void printMat(double** a, double* b, double* x, int n){
 void printVect(double* x, int n){
     printf("\n");
     for(int i = 0;i < n;i++){
-        printf("%lf\n",x[i]);
+        printf("%lf ",x[i]);
     }
 }
 void printIter(long long int iter){
@@ -143,6 +143,11 @@ long long int sorSolver(double** a, double* b, double* x_0, int n, double eta, d
         if(mode){
             printIter(iter);
             printVect(x_k1,n);
+            printf("\n Error vector:\n");
+            for(int i = 0;i < n;i++){
+                printf("%lf ",x_k1[i] - x_k[i]);
+            }
+            printf("\n");
             printf("Max Error = %lf\n",max_err);
         }
     }while(max_err > eta);
