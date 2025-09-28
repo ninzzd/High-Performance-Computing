@@ -71,6 +71,11 @@ int main(){
     printf(" ---- Minimal Residual Gradient Descent ----\n");
     int iter_mr = minimalResidual(a,b,x0,n,0.000001,0,x);
     printf("No. of iterations = %d\n",iter_mr);
+    // printf("Final solution:\n");
+    // printVect(x,n);
+    printf(" ---- Vonjugate Gradient Descent ----\n");
+    int iter_cg = conjugateGradient(a,b,x0,n,0.000001,0,x);
+    printf("No. of iterations = %d\n",iter_cg);
     printf("Final solution:\n");
     printVect(x,n);
     // ------------------------------------------------------------------------------------

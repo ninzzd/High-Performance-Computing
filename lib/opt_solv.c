@@ -89,3 +89,53 @@ int minimalResidual(double **a, double *b, double* x0, int n, double eta, int mo
     free(pk);
     return 0;
 }
+int conjugateGradient(double **a, double *b, double *x0, int n, double eta, int mode, double *result){
+    double *xk = (double*)malloc(n*sizeof(double));
+    double *rk = (double*)malloc(n*sizeof(double));
+    double *pk = (double*)malloc(n*sizeof(double));
+    double *apk = (double*)malloc(n*sizeof(double));
+    double err;
+    int iter = 0;
+    for(int i = 0;i < n;i++){
+        double ax = 0.0;
+        for(int j = 0;j < n;j++){
+            ax += a[i][j]*x0[j];
+        }
+        rk[i] = b[i] - ax;
+        pk[i] = rk[i];
+    }
+    do{
+        iter++;
+        if(iter == 1){
+            memcpy(xk,x0,n*sizeof(double));
+        }
+        double *apk = (double*)malloc(n*sizeof(double));
+        for(int i = 0;i < n;i++){
+            double row = 0.0;
+            for(int j = 0;j < n;j++){
+                row += a[i][j]*pk[j];
+            }
+            apk[i] = row;
+        }
+        double alpha = cblas_ddot(n,rk,1,rk,1)/cblas_ddot(n,pk,1,apk,1);
+        for(int i = 0;i < n;i++){
+            xk[i] += alpha*pk[i];
+        }
+        double rt_dot_r = cblas_ddot(n,rk,1,rk,1);
+        for(int i = 0;i < n;i++){
+            rk[i] -= alpha*apk[i];
+        }
+        double beta = cblas_ddot(n,rk,1,rk,1)/rt_dot_r;
+        for(int i = 0;i < n;i++){
+            pk[i] = rk[i] + beta*pk[i];
+        }
+        err = cblas_dnrm2(n,rk,1);
+        free(apk);
+    }while(err > eta);
+    memcpy(result,xk,n*sizeof(double));
+    free(xk);
+    free(rk);
+    free(pk);
+    free(apk);
+    return iter;
+}
