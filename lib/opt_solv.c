@@ -142,7 +142,7 @@ int conjugateGradient(double **a, double *b, double *x0, int n, double eta, int 
 int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, double *result){
     double *xk = (double*)malloc(n*sizeof(double));
     double *rk = (double*)malloc(n*sizeof(double));
-    double *rk_ = (double*)malloc(n*sizeof(double));
+    double *r0_ = (double*)malloc(n*sizeof(double));
     double *pk = (double*)malloc(n*sizeof(double));
     double err;
     int iter = 0;
@@ -153,7 +153,7 @@ int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, dou
         }
         rk[i] = b[i] - ax;
         pk[i] = rk[i];
-        rk_[i] = (double)rand()/(double)RAND_MAX;
+        r0_[i] = (double)rand()/(double)RAND_MAX;
     }
     memcpy(xk,x0,n*sizeof(double));
     do{
@@ -167,7 +167,7 @@ int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, dou
             }
             ap[i] = row;
         }
-        double alpha = cblas_ddot(n,rk,1,rk_,1)/cblas_ddot(n,ap,1,rk_,1);
+        double alpha = cblas_ddot(n,rk,1,r0_,1)/cblas_ddot(n,ap,1,r0_,1);
         for(int i = 0;i < n;i++){
             s[i] = rk[i] - alpha*ap[i];
         }
@@ -180,18 +180,14 @@ int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, dou
             as[i] = row;
         }
         double w = cblas_ddot(n,as,1,s,1)/cblas_ddot(n,as,1,as,1);
-        double temp = cblas_ddot(n,rk,1,rk_,1);
+        double temp = cblas_ddot(n,rk,1,r0_,1);
         for(int i = 0;i < n;i++){
             xk[i] += alpha*pk[i] + w*s[i];
             rk[i] = s[i] - w*as[i];
         }
-        double beta = (alpha*cblas_ddot(n,rk,1,rk_,1))/(w*temp);
+        double beta = (alpha*cblas_ddot(n,rk,1,r0_,1))/(w*temp);
         for(int i = 0;i < n;i++){
-            double row_ap = 0.0;
-            for(int j = 0;j < n;j++){
-                row_ap += a[i][j]*pk[i];
-            }
-            pk[i] = rk[i] + beta*(pk[i] - w*row_ap);
+            pk[i] = rk[i] + beta*(pk[i] - w*ap[i]);
         }
         err = cblas_dnrm2(n,rk,1);
         free(ap);
@@ -201,7 +197,7 @@ int bicgstab(double **a, double *b, double *x0, int n, double eta, int mode, dou
     memcpy(result,xk,n*sizeof(double));
     free(xk);
     free(rk);
-    free(rk_);
+    free(r0_);
     free(pk);
     return iter;
 }
