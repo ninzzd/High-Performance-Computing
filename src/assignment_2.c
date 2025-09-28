@@ -1,7 +1,20 @@
 #include "iter_solv.h"
 #include "opt_solv.h"
 #include "fdm.h"
+#include "sys/time.h"
 #include "time.h"
+#include "unistd.h"
+void printCPUTime(struct timeval start, struct timeval end){
+    time_t s, us, ms;
+    s = end.tv_sec - start.tv_sec;
+    us = end.tv_usec - start.tv_usec;
+    if(us < 0){
+        us += 1000000;
+        s -= 1;
+    }
+    ms = us/1000;
+    printf("CPU Time = %lds %ldms %ldus\n",s,ms,us%1000);
+}
 int main(){
     char sel;
     printf("Do you want to generate new FDM matrices? (yY/nN): \n");
@@ -20,6 +33,7 @@ int main(){
     }
     // generateFDM();
     // ------------------------------------------------------------------------------------
+    struct timeval start, end;
     double **a, *b, *x0, *x;
     int n;
     FILE *kmat, *fvec, *kinfo;
@@ -57,32 +71,48 @@ int main(){
     for(int i = 0;i < n;i++){
         x0[i] = 0.0;
     }
-    printf(" ---- Bauss-Seidel SOR with Optimal w ----\n");
+
+    printf(" ---- Gauss-Seidel SOR with Optimal w ----\n");
+    gettimeofday(&start,NULL);
     long long int iter_sor_opt = sorSolver(a,b,x0,n,0.000001,w_opt,0,x);
+    gettimeofday(&end,NULL);
     printf("Optimal w = %lf\n",w_opt);
     printf("No. of iterations = %lld\n",iter_sor_opt);
-    printf("Final solution:\n");
-    printVect(x,n);
+    printCPUTime(start,end);
+    // printf("Final solution:\n");
+    // printVect(x,n);
     printf(" ---- Steepest Gradient Descent ----\n");
+    gettimeofday(&start,NULL);
     int iter_sd = steepestDescent(a,b,x0,n,0.000001,0,x);
+    gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_sd);
+    printCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- Minimal Residual Gradient Descent ----\n");
+    gettimeofday(&start,NULL);
     int iter_mr = minimalResidual(a,b,x0,n,0.000001,0,x);
+    gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_mr);
+    printCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- Conjugate Gradient Descent ----\n");
+    gettimeofday(&start,NULL);
     int iter_cg = conjugateGradient(a,b,x0,n,0.000001,0,x);
+    gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_cg);
+    printCPUTime(start,end);
     // printf("Final solution:\n");
     // printVect(x,n);
     printf(" ---- BICGSTAB ----\n");
+    gettimeofday(&start,NULL);
     int iter_bicgstab = bicgstab(a,b,x0,n,0.000001,0,x);
+    gettimeofday(&end,NULL);
     printf("No. of iterations = %d\n",iter_bicgstab);
-    printf("Final solution:\n");
-    printVect(x,n);
+    printCPUTime(start,end);
+    // printf("Final solution:\n");
+    // printVect(x,n);
     // ------------------------------------------------------------------------------------
     free(b);
     free(x0);
