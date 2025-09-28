@@ -3,7 +3,8 @@
 | Optimal SOR | $\omega_{opt} = 1.588791$<br>$N_{iter} = 37$ | $\omega_{opt} = 1.777251$<br>$N_{iter} = 77$ | $\omega_{opt} = 1.881838$<br>$N_{iter} = 155$ |
 |Steepest Gradient Descent | $N_{iter} = 748$ | $N_{iter} = 3106$ | $N_{iter} = 11734$ | 
 |Minimal Residual (MR) | $N_{iter} = 365$ | $N_{iter} = 1506$ | $N_{iter} = 5705$ | 
-|Conjugate Gradient (CG) | $N_{iter} = 31$ | $N_{iter} = 1506$ | $N_{iter} = 5705$ | 
+|Conjugate Gradient (CG) | $N_{iter} = 31$ | $N_{iter} = 0$ | $N_{iter} = 0$ | 
+| BICGSTAB | $N_{iter} = 86$ | $N_{iter} = 0$ | $N_{iter} = 0$ | 
 
 
 
