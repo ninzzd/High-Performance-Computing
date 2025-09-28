@@ -18,10 +18,11 @@ void printMat(double** a, double* b, double* x, int n){
     }
 }
 void printVect(double* x, int n){
-    printf("\n");
+    printf("\n[");
     for(int i = 0;i < n;i++){
         printf("%lf ",x[i]);
     }
+    printf("]\n");
 }
 void printIter(long long int iter){
     const char* suffix;
@@ -135,11 +136,15 @@ long long int sorSolver(double** a, double* b, double* x_0, int n, double eta, d
             x_k1[i] = x_k[i] + w*(x_k1[i] - x_k[i]);
         }
         iter++;
-        max_err = 0.0;
-        for(int i = 0;i < n;i++){
-            if(fabsf(x_k1[i] - x_k[i]) > max_err)
-                max_err = fabsf(x_k1[i] - x_k[i]);
-        }
+        double* err = (double*)malloc(n*sizeof(double));
+        for(int i = 0;i < n;i++)
+            err[i] = x_k1[i] - x_k[i];
+        max_err = cblas_dnrm2(n,err,1);
+        // for(int i = 0;i < n;i++){
+        //     if(fabsf(x_k1[i] - x_k[i]) > max_err)
+        //         max_err = fabsf(x_k1[i] - x_k[i]);
+        // }
+
         if(mode){
             printIter(iter);
             printVect(x_k1,n);

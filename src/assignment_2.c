@@ -1,8 +1,24 @@
 #include "iter_solv.h"
 #include "opt_solv.h"
 #include "fdm.h"
+#include "time.h"
 int main(){
-    generateFDM();
+    char sel;
+    printf("Do you want to generate new FDM matrices? (yY/nN): \n");
+    scanf(" %c",&sel);
+    switch(sel){
+        case 'y':
+        case 'Y':
+            generateFDM();
+            break;
+        case 'n':
+        case 'N':
+            break;
+        default:
+            printf("Invalid Input. Exiting.\n");
+            return 0;
+    }
+    // generateFDM();
     // ------------------------------------------------------------------------------------
     double **a, *b, *x0, *x;
     int n;
@@ -41,13 +57,25 @@ int main(){
     for(int i = 0;i < n;i++){
         x0[i] = 0.0;
     }
+    printf(" ---- Bauss-Seidel SOR with Optimal w ----\n");
     long long int iter_sor_opt = sorSolver(a,b,x0,n,0.000001,w_opt,0,x);
     printf("Optimal w = %lf\n",w_opt);
     printf("No. of iterations = %lld\n",iter_sor_opt);
+    printf("Final solution:\n");
+    printVect(x,n);
+    printf(" ---- Steepest Gradient Descent ----\n");
+    int iter_sd = steepestDescent(a,b,x0,n,0.000001,0,x);
+    printf("No. of iterations = %d\n",iter_sd);
+    // printf("Final solution:\n");
     // printVect(x,n);
-    // printf("------------\n");
+    printf(" ---- Minimal Residual Gradient Descent ----\n");
+    int iter_mr = minimalResidual(a,b,x0,n,0.000001,0,x);
+    printf("No. of iterations = %d\n",iter_mr);
+    printf("Final solution:\n");
+    printVect(x,n);
     // ------------------------------------------------------------------------------------
     free(b);
+    free(x0);
     for(int i = 0;i < n;i++){
         free(a[i]);
     }
